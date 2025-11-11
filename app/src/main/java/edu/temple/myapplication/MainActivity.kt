@@ -6,14 +6,23 @@ import android.content.ServiceConnection
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
+import android.os.Looper
+import android.os.Handler
 import android.widget.Button
+import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var timerBinder: TimerService.TimerBinder
     lateinit var startButton: Button
+    lateinit var displayTextView: TextView
 
     var isConnected = false
+
+    val timerHandler = Handler(Looper.getMainLooper()) {
+        displayTextView.text = it.what.toString()
+        true
+    }
 
     val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(
@@ -21,6 +30,7 @@ class MainActivity : AppCompatActivity() {
             p1: IBinder?
         ) {
             timerBinder = p1 as TimerService.TimerBinder
+            timerBinder.setHandler(timerHandler)
             isConnected = true
         }
 
@@ -35,14 +45,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // implement START function + binds service
+        startButton = findViewById(R.id.startButton)
+        displayTextView = findViewById(R.id.textView)
+
         bindService(
             Intent(this, TimerService::class.java),
             serviceConnection,
             BIND_AUTO_CREATE
         )
 
-        // implement START function + binds service
-        startButton = findViewById(R.id.startButton)
 
         startButton.setOnClickListener {
             if (isConnected) {
@@ -74,6 +86,7 @@ class MainActivity : AppCompatActivity() {
             if (isConnected) {
                 timerBinder.stop()
                 startButton.text = "Start"
+                displayTextView.text = "0"
             }
             if (timerBinder.paused)
                 timerBinder.pause()
