@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var timerBinder: TimerService.TimerBinder
     lateinit var startButton: Button
     lateinit var displayTextView: TextView
+    lateinit var actionStartTimer: MenuItem
 
     var isConnected = false
 
@@ -97,8 +98,54 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main, menu)
+        actionStartTimer = menu!!.findItem(R.id.action_start_timer)
+
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.action_start_timer -> {
+                if (isConnected) {
+                    with(timerBinder) {
+                        // START a countdown with the service if nothing is running
+                        if (!isRunning && !paused) {
+                            timerBinder.start(5)
+                            startButton.text = "Pause"
+                            item.setIcon(android.R.drawable.ic_media_pause)
+                        }
+
+                        // should allow PAUSE while TimerThread isRunning
+                        else if (isRunning && !paused) {
+                            timerBinder.pause()
+                            startButton.text = "Resume"
+                            item.setIcon(android.R.drawable.ic_media_play)
+                        }
+
+                        // should allow RESUME while TimerThread isRunning + paused
+                        else if (paused) {
+                            timerBinder.pause()
+                            startButton.text = "Pause"
+                            item.setIcon(android.R.drawable.ic_media_pause)
+                        }
+                    }
+                }
+            }
+
+            R.id.action_stop_timer -> {
+                if (isConnected) {
+                    timerBinder.stop()
+                    startButton.text = "Start"
+                    displayTextView.text = "0"
+                    actionStartTimer.setIcon(android.R.drawable.ic_media_play)
+                }
+                if (timerBinder.paused)
+                    timerBinder.pause()
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
 

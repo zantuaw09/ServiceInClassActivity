@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/action_start_timer"
-        android:icon="@android:drawable/ic_media_pause"
+        android:icon="@android:drawable/ic_media_play"
         android:title="Start Timer"
         app:showAsAction="ifRoom" />
     <item
