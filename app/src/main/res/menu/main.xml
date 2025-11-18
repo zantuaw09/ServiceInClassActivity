@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item
+        android:id="@+id/action_start_timer"
+        android:icon="@android:drawable/ic_media_pause"
+        android:title="Start Timer"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_stop_timer"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:title="Stop Timer"
+        app:showAsAction="ifRoom" />
 </menu>

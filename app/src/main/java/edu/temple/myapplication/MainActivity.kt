@@ -8,6 +8,8 @@ import android.os.Bundle
 import android.os.IBinder
 import android.os.Looper
 import android.os.Handler
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.TextView
 
@@ -92,6 +94,13 @@ class MainActivity : AppCompatActivity() {
                 timerBinder.pause()
         }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
 
     override fun onDestroy() {
         unbindService(serviceConnection)
