@@ -10,13 +10,11 @@ import android.os.Looper
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
 import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var timerBinder: TimerService.TimerBinder
-    lateinit var startButton: Button
     lateinit var displayTextView: TextView
     lateinit var actionStartTimer: MenuItem
 
@@ -38,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onServiceDisconnected(p0: ComponentName?) {
-            startButton.text = "Start"
+            actionStartTimer.setIcon(android.R.drawable.ic_media_play)
             isConnected = false
         }
     }
@@ -48,9 +46,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // implement START function + binds service
-        startButton = findViewById(R.id.startButton)
-        displayTextView = findViewById(R.id.textView)
+        // references display text view + binds service
+        displayTextView = findViewById(R.id.displayTextView)
 
         bindService(
             Intent(this, TimerService::class.java),
@@ -58,42 +55,6 @@ class MainActivity : AppCompatActivity() {
             BIND_AUTO_CREATE
         )
 
-
-        startButton.setOnClickListener {
-            if (isConnected) {
-                with(timerBinder) {
-                    // START a countdown with the service if nothing is running
-                    if (!isRunning && !paused) {
-                        timerBinder.start(5)
-                        startButton.text = "Pause"
-                    }
-
-                    // should allow PAUSE while TimerThread isRunning
-                    else if (isRunning && !paused) {
-                        timerBinder.pause()
-                        startButton.text = "Resume"
-                    }
-
-                    // should allow RESUME while TimerThread isRunning + paused
-                    else if (paused) {
-                        timerBinder.pause()
-                        startButton.text = "Pause"
-                    }
-                }
-            }
-
-        }
-
-        // implement STOP function + unbind service
-        findViewById<Button>(R.id.stopButton).setOnClickListener {
-            if (isConnected) {
-                timerBinder.stop()
-                startButton.text = "Start"
-                displayTextView.text = "0"
-            }
-            if (timerBinder.paused)
-                timerBinder.pause()
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -112,21 +73,18 @@ class MainActivity : AppCompatActivity() {
                         // START a countdown with the service if nothing is running
                         if (!isRunning && !paused) {
                             timerBinder.start(5)
-                            startButton.text = "Pause"
                             item.setIcon(android.R.drawable.ic_media_pause)
                         }
 
                         // should allow PAUSE while TimerThread isRunning
                         else if (isRunning && !paused) {
                             timerBinder.pause()
-                            startButton.text = "Resume"
                             item.setIcon(android.R.drawable.ic_media_play)
                         }
 
                         // should allow RESUME while TimerThread isRunning + paused
                         else if (paused) {
                             timerBinder.pause()
-                            startButton.text = "Pause"
                             item.setIcon(android.R.drawable.ic_media_pause)
                         }
                     }
@@ -136,7 +94,6 @@ class MainActivity : AppCompatActivity() {
             R.id.action_stop_timer -> {
                 if (isConnected) {
                     timerBinder.stop()
-                    startButton.text = "Start"
                     displayTextView.text = "0"
                     actionStartTimer.setIcon(android.R.drawable.ic_media_play)
                 }
